@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using expense_control_api.Data;
 using expense_control_api.DTOs;
+using expense_control_api.Enums;
 using expense_control_api.Interfaces;
 using expense_control_api.Models;
 using expense_control_api.Results;
@@ -64,5 +65,33 @@ namespace expense_control_api.Services
            return Result<bool>.Ok(true);
         }
 
+        public async Task<Result<PeopleSummaryResponse>> GetPeopleSummary()
+        {
+            var peopleSummary = await _context.people.Select(
+                p => new PersonSummaryItem
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Age = p.Age,
+                    Income = p.Transactions.Where(t => t.Type == TransactionType.Income).Sum(t => (decimal?)t.Amount) ?? 0,
+                    Expense = p.Transactions.Where(t => t.Type == TransactionType.Expense).Sum(t => (decimal?)t.Amount) ?? 0,
+
+                }).ToListAsync();
+
+            foreach(var person in peopleSummary)
+            {
+                person.Balance = person.Income - person.Expense;
+            }
+
+            var response = new PeopleSummaryResponse
+            {
+                PersonSummary = peopleSummary,
+                TotalIncome = peopleSummary.Sum(i => i.Income),
+                TotalExpense = peopleSummary.Sum(e => e.Expense),
+                TotalBalance = peopleSummary.Sum(b => b.Balance)
+            };
+
+            return Result<PeopleSummaryResponse>.Ok(response); 
+        }
     }
 }

@@ -34,7 +34,7 @@ namespace expense_control_api.Controllers
 
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -54,7 +54,7 @@ namespace expense_control_api.Controllers
 
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
 
         }
@@ -75,9 +75,28 @@ namespace expense_control_api.Controllers
 
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
 
+        }
+
+        [HttpGet("GetPeopleSummary")]
+        public async Task<ActionResult> GetPeopleSumamry()
+        {
+            try
+            {
+                var peopleSummary = await _personService.GetPeopleSummary();
+
+                if(!peopleSummary.Success)
+                    return BadRequest(new { error = peopleSummary.Error });
+
+                return Ok(peopleSummary.Data);
+            }
+
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpDelete]
@@ -96,7 +115,7 @@ namespace expense_control_api.Controllers
 
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
         }
     }

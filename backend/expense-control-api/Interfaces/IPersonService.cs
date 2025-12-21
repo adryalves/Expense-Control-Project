@@ -9,5 +9,6 @@ namespace expense_control_api.Interfaces
         Task<Result<PersonListResponse>> GetAllPeople();
         Task<Result<PersonResponse>> GetPersonById(Guid id);
         Task<Result<bool>> DeletePerson(Guid id);
+        Task<Result<PeopleSummaryResponse>> GetPeopleSummary();
     }
 }
