@@ -10,5 +10,6 @@ namespace expense_control_api.Interfaces
         Task<Result<CategoryListResponse>> GetAllCategories();
         Task<Result<CategoryResponse>> GetCategoryById(Guid id);
         Task<Result<CategoryResponse>> UpdateCategory(Guid id, CategoryRequest categoryRequest);
+        Task<Result<CategoriesSummaryResponse>> GetCategoriesSummary();
     }
 }

@@ -36,7 +36,7 @@ namespace expense_control_api.Controllers
 
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -55,7 +55,7 @@ namespace expense_control_api.Controllers
 
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -74,7 +74,25 @@ namespace expense_control_api.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetCategoriesSummary")]
+        public async Task<ActionResult> GetCategoriesSummary()
+        {
+            try
+            {
+                var categoriesSumamry = await _categoryService.GetCategoriesSummary();
+                if (!categoriesSumamry.Success)
+                    return BadRequest(new { error = categoriesSumamry.Error });
+
+                return Ok(categoriesSumamry.Data);
+            }
+
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
 
@@ -96,8 +114,10 @@ namespace expense_control_api.Controllers
 
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
         }
+
+        
     }
 }
