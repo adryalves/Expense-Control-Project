@@ -34,7 +34,7 @@ namespace expense_control_api.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
 
         }
@@ -75,7 +75,7 @@ namespace expense_control_api.Controllers
 
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
         }
 
