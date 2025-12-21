@@ -20,6 +20,14 @@ namespace expense_control_api.Services
             _mapper = mapper;
         }
 
+
+        /// <summary>
+        /// Recebe o DTO de transaction, antes de criar valida se os identificadores de categoria e pessoas correspondem
+        /// a itens existentes no banco de dados. Após isso, valida se a o tipo de transação corresponde a finalidade da categoria correspondente,
+        /// depois valida para que caso a pessoa informada seja menor de idade, apenas transações do tipo despesa são aceitas,
+        /// após todas as validações. Converte para o modelo do banco de dados, cria a transação e retorna o 
+        /// DTO de resposta com os dados da transação criada
+        /// </summary>
         public async Task<Result<TransactionResponse>> CreateTransaction(TransactionRequest transactionRequest)
         {
             var category = await _context.categories.FindAsync(transactionRequest.CategoryId);
@@ -42,6 +50,9 @@ namespace expense_control_api.Services
             return Result<TransactionResponse>.Ok(response);
         }
 
+        /// <summary>
+        /// Busca e retorna todas as transações existentes no sistema mapeadas para o DTO de resposta
+        /// </summary>
         public async Task<Result<TransactionListResponse>> GetAllTransaction()
         {
             var transactions = await _context.transactions.ToListAsync();
@@ -54,6 +65,9 @@ namespace expense_control_api.Services
             return Result<TransactionListResponse>.Ok(response);
         }
 
+        /// <summary>
+        /// Recebe um id, busca no sistema um item na tabela transações com esse identificador e retorna ele mapeado para o DTO de resposta
+        /// </summary>
         public async Task<Result<TransactionResponse>> GetTransactionById(Guid id)
         {
             var transaction = await _context.transactions.FindAsync(id);
@@ -61,17 +75,13 @@ namespace expense_control_api.Services
             return Result<TransactionResponse>.Ok(response);
         }
 
-      
 
-            
-
-
-            
-
-      
-
-          
-
+        /// <summary>
+        /// Esse método serve para validar se o tipo de transação corresponde a finalidade da categoria informada
+        /// caso a finalidade da categoria seja 'Both', então quer dizer que independente do tipo de transação, essa categoria é válida
+        /// porém, caso não seja essa, é preciso que o tipo de transação corresponda a finalidade da categoria.
+        /// Esse método retorna true caso o tipo de transação seja válido, ou seja corresponde a finalidade da categoria
+        /// </summary>
         public static bool ValidateCategory(CategoryPurpose categoryPurpose, TransactionType transactionType)
         {
             if (categoryPurpose == CategoryPurpose.Both) return true;

@@ -21,6 +21,9 @@ namespace expense_control_api.Services
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Recebe o DTO de categoria, converte para o modelo do bd e cria no banco e retorna o DTO da categoria criada
+        /// </summary>
         public async Task<Result<CategoryResponse>> CreateCategory(CategoryRequest categoryRequest)
         {
             var category = _mapper.Map<Category>(categoryRequest);
@@ -32,6 +35,9 @@ namespace expense_control_api.Services
             return Result<CategoryResponse>.Ok(response);
         }
 
+        /// <summary>
+        /// Busca e retorna todas as categorias existentes no sistema
+        /// </summary>
         public async Task<Result<CategoryListResponse>> GetAllCategories()
         {
 
@@ -43,7 +49,9 @@ namespace expense_control_api.Services
             return Result<CategoryListResponse>.Ok(response);
         }
 
-
+        /// <summary>
+        /// Busca e retorna a categoria existente no sistema com o id informado
+        /// </summary>
         public async Task<Result<CategoryResponse>> GetCategoryById(Guid id)
         {
             var category = await _context.categories.FindAsync(id);
@@ -54,6 +62,9 @@ namespace expense_control_api.Services
             return Result<CategoryResponse>.Ok(response);
         }
 
+        /// <summary>
+        /// Recebe o id de uma categoria, busca ela no banco e então atualiza os seus campos, salva no banco e retorna o valor atualizado do modelo
+        /// </summary>
         public async Task<Result<CategoryResponse>> UpdateCategory(Guid id,  CategoryRequest categoryRequest)
         {
             var category = await _context.categories.FindAsync(id);
@@ -68,6 +79,10 @@ namespace expense_control_api.Services
             return Result<CategoryResponse>.Ok(response); 
         }
 
+        /// <summary>
+        /// Busca todas as categorias do sistema, e para cada categoria calcula-se o total de receitas, despesas e saldos. Além disso, calcula-se o total
+        /// desses mesmos atributos porém referente ao valor total de todas as categorias do sistema
+        /// </summary>
         public async Task<Result<CategoriesSummaryResponse>> GetCategoriesSummary()
         {
             var categoriesSummary = await _context.categories.Select(

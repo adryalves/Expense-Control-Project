@@ -1,7 +1,11 @@
 ﻿namespace expense_control_api.Results
 {
-
-        public class Result<T>
+    /// <summary>
+    /// Essa classe funciona como uma classe para gerar resposta, por meio dela é possível registrar no service
+    /// se algo deu errado na excecução da lógica do fluxo e o que deu errado. Dessa forma, é possível no controller recuperar
+    /// o motivo de algum erro que possa ter ocorrido no service
+    /// </summary>
+    public class Result<T>
         {
             public bool Success { get; }
             public string Error { get; }
