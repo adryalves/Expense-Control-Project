@@ -2,6 +2,7 @@ using expense_control_api.Data;
 using expense_control_api.Interfaces;
 using expense_control_api.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,10 +16,10 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new() { Title = "ProjetoControleGastos", Version = "v1" });
 });
 
-builder.Services.AddDbContext<ExpenseControlDbContext, ExpenseControlDbContext>();
-builder.Services.AddScoped<ExpenseControlDbContext>();
 
 builder.Services.AddScoped<IPersonService, PersonService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
 
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -30,6 +31,15 @@ builder.Services.AddDbContext<ExpenseControlDbContext>(options =>
         ServerVersion.Parse("8.0.33-mysql")
     );
 });
+
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter()
+        );
+    });
 
 
 var app = builder.Build();
