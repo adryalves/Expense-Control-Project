@@ -8,9 +8,6 @@ namespace expense_control_api.Data;
 
 public partial class ExpenseControlDbContext : DbContext
 {
-    public ExpenseControlDbContext()
-    {
-    }
 
     public ExpenseControlDbContext(DbContextOptions<ExpenseControlDbContext> options)
         : base(options)
@@ -23,7 +20,7 @@ public partial class ExpenseControlDbContext : DbContext
 
     public virtual DbSet<Transaction> transactions { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) { }
+   
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -57,6 +54,15 @@ public partial class ExpenseControlDbContext : DbContext
             entity.Property(e => e.Amount).HasPrecision(18, 2);
             entity.Property(e => e.Description).HasMaxLength(200);
             entity.Property(e => e.Type).HasConversion<string>().HasColumnType("enum('EXPENSE','INCOME')");
+
+            entity.Property(e => e.CategoryId)
+                .HasColumnName("category_id")
+                .HasColumnType("char(36)");
+
+            entity.Property(e => e.PersonId)
+                .HasColumnName("person_id")
+                .HasColumnType("char(36)");
+
 
 
             entity.HasOne(d => d.Category).WithMany(p => p.Transactions)
