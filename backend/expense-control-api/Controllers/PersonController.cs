@@ -1,4 +1,4 @@
-﻿using expense_control_api.DTOs;
+﻿﻿using expense_control_api.DTOs;
 using expense_control_api.Interfaces;
 using expense_control_api.Models;
 using expense_control_api.Results;
@@ -111,6 +111,31 @@ namespace expense_control_api.Controllers
 
                 return Ok(delete.Data);
 
+            }
+
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdatePerson([FromQuery] Guid id, [FromBody] PersonRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid) return BadRequest(ModelState);
+
+                var person = await _personService.GetPersonById(id);
+
+                if(person.Data == null) return NotFound("Não foi encontrada uma pessoa com esse id");
+
+                var personUpdated = await _personService.UpdatePerson(id, request);
+
+                if(!personUpdated.Success)
+                    return BadRequest(new { error = personUpdated.Error });
+
+                return Ok(personUpdated.Data);
             }
 
             catch (Exception ex)

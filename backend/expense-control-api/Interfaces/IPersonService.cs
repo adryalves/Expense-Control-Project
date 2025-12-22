@@ -10,5 +10,6 @@ namespace expense_control_api.Interfaces
         Task<Result<PersonResponse>> GetPersonById(Guid id);
         Task<Result<bool>> DeletePerson(Guid id);
         Task<Result<PeopleSummaryResponse>> GetPeopleSummary();
+        Task<Result<PersonResponse>> UpdatePerson(Guid id, PersonRequest request);
     }
 }

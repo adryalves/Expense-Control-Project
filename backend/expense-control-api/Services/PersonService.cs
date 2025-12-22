@@ -78,6 +78,27 @@ namespace expense_control_api.Services
            return Result<bool>.Ok(true);
         }
 
+
+        ///<summary>    
+        /// Recebe um identificador e os dados da pessoa a serem atualizados,
+        /// busca esse dado no banco e se existir atualiza os dados para os recebidos e retorna o 
+        /// objeto atualizado
+        /// </summary>
+        public async Task<Result<PersonResponse>> UpdatePerson(Guid id, PersonRequest request)
+        {
+            var person = await _context.people.FindAsync(id);
+            if(person != null)
+            {
+                person.Name = request.Name;
+                person.Age = request.Age;
+            }
+
+            await _context.SaveChangesAsync();
+
+            var response = _mapper.Map<PersonResponse>(person);
+            return Result<PersonResponse>.Ok(response);
+        }
+
         /// <summary>
         /// Busca todas as pessoas  do sistema, e para cada pessoa calcula-se o total de receitas, despesas e saldos. Além disso, calcula-se o total
         /// desses mesmos atributos porém referente ao valor total de todas as categorias do sistema

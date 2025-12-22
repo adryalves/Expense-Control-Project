@@ -101,6 +101,8 @@ namespace expense_control_api.Controllers
         {
             try
             {
+                if (!ModelState.IsValid) return BadRequest(ModelState);
+
                 var category = await _categoryService.GetCategoryById(id);
                 if (category.Data == null) return NotFound("Não foi encontrada uma categoria com esse id");
 
