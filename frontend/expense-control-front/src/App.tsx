@@ -1,35 +1,61 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+import { useMemo } from 'react'
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+import { Sidebar } from './components/layout/Sidebar'
+import { Topbar } from './components/layout/Topbar'
+import { type RouteKey, useHashRoute } from './lib/router'
+import { DashboardPage } from './pages/DashboardPage'
+import { CategoryPage } from './pages/CategoryPage'
+import { PeoplePage } from './pages/PeoplePage'
+import { TransactionsPage } from './pages/TransactionsPage'
+import { ReportPersonPage } from './pages/ReportPersonPage'
+import { ReportCategoryPage } from './pages/ReportCategoryPage'
+
+function pageTitle(route: RouteKey) {
+  switch (route) {
+    case 'dashboard':
+      return 'Dashboard'
+    case 'people':
+      return 'Pessoas'
+    case 'categories':
+      return 'Categorias'
+    case 'transactions':
+      return 'Transações'
+    case 'report-person':
+      return 'Totais por Pessoa'
+    case 'report-category':
+      return 'Totais por Categoria'
+  }
 }
 
-export default App
+export default function App() {
+  const route = useHashRoute()
+
+  const content = useMemo(() => {
+    switch (route) {
+      case 'dashboard':
+        return <DashboardPage />
+      case 'people':
+        return <PeoplePage />
+      case 'categories':
+        return <CategoryPage />
+      case 'transactions':
+        return <TransactionsPage />
+      case 'report-person':
+        return <ReportPersonPage />
+      case 'report-category':
+        return <ReportCategoryPage />
+    }
+  }, [route])
+
+  return (
+    <div className="appShell">
+      <Sidebar activeRoute={route} />
+      <div className="appShell__main">
+        <Topbar title={pageTitle(route)} />
+        <main className="content">{content}</main>
+      </div>
+    </div>
+  )
+}
