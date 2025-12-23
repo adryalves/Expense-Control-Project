@@ -30,10 +30,30 @@ function statusClass(age: number) {
 function usePeopleData(options: { page: number; pageSize: number }) {
   const [isLoading, setIsLoading] = useState(true)
   const [people, setPeople] = useState<PersonResponse[]>([])
+  const [allPeople, setAllPeople] = useState<PersonResponse[] | null>(null)
   const [totalPages, setTotalPages] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
   const [transactions, setTransactions] = useState<TransactionResponse[]>([])
   const [refreshKey, setRefreshKey] = useState(0)
+
+  useEffect(() => {
+    const controller = new AbortController()
+    const { signal } = controller
+
+    async function load() {
+      try {
+        const all = await apiGetAllPaginated<PersonResponse>({ path: '/api/v1.0/person/All', signal })
+        if (signal.aborted) return
+        setAllPeople(all)
+      } catch {
+        if (signal.aborted) return
+        setAllPeople(null)
+      }
+    }
+
+    void load()
+    return () => controller.abort()
+  }, [refreshKey])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -89,7 +109,7 @@ function usePeopleData(options: { page: number; pageSize: number }) {
     return map
   }, [transactions])
 
-  return { isLoading, people, totalPages, totalRecords, transactionCountByPersonId, refresh: reload }
+  return { isLoading, people, allPeople, totalPages, totalRecords, transactionCountByPersonId, refresh: reload }
 }
 
 function PeopleTable({
@@ -258,9 +278,10 @@ function PersonModal({
             placeholder="Digite a idade"
             inputMode="numeric"
             min={1}
+            max={130}
             type="number"
           />
-          {!isAgeValid && age !== '' ? <div className="formError">A idade deve ser maior que zero</div> : null}
+          {!isAgeValid && age !== '' ? <div className="formError">A idade deve estar entre 1 e 130</div> : null}
         </div>
 
         {formError ? <div className="formError formError--box">{formError}</div> : null}
@@ -327,7 +348,7 @@ export function PeoplePage() {
   }
 
   const ageNumber = age === '' ? NaN : Number(age)
-  const isAgeValid = Number.isInteger(ageNumber) && ageNumber >= 1
+  const isAgeValid = Number.isInteger(ageNumber) && ageNumber >= 1 && ageNumber <= 130
   const isNameValid = name.trim().length > 0
   const canSave = isNameValid && isAgeValid && !isSaving
 
@@ -335,6 +356,16 @@ export function PeoplePage() {
     e.preventDefault()
     setFormError(null)
     if (!canSave) return
+
+    const normalizedName = name.trim().toLocaleLowerCase()
+    if (data.allPeople) {
+      const duplicate = data.allPeople.find((p) => p.id !== editingPerson?.id && p.name.trim().toLocaleLowerCase() === normalizedName)
+      if (duplicate) {
+        setFormError('Já existe uma pessoa cadastrada com esse nome')
+        return
+      }
+    }
+
     setIsSaving(true)
     try {
       if (editingPerson) {
