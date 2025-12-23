@@ -120,8 +120,8 @@ namespace expense_control_api.Controllers
             }
         }
 
-        [HttpPut]
-        public async Task<ActionResult> UpdatePerson([FromQuery] Guid id, [FromBody] PersonRequest request)
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdatePerson([FromRoute] Guid id, [FromBody] PersonRequest request)
         {
             try
             {

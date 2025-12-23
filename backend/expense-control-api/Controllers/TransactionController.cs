@@ -79,6 +79,27 @@ namespace expense_control_api.Controllers
             }
         }
 
+        [HttpPut("{id}")]
+        public async Task<ActionResult<TransactionResponse>> UpdateTransaction([FromRoute] Guid id, [FromBody] TransactionRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid) return BadRequest(ModelState);
+
+                var transaction = await _transactionService.UpdateTransaction(id, request);
+
+                if (!transaction.Success)
+                    return BadRequest(new { error = transaction.Error });
+
+                return Ok(transaction.Data);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 }
 

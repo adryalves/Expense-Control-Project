@@ -82,6 +82,39 @@ namespace expense_control_api.Services
             return Result<TransactionResponse>.Ok(response);
         }
 
+        /// <summary>
+        /// Esse método é para atualizar transação, porém antes de atualizar ele precisa realizar as mesmas validações feitas ao cadastrar para manter consistencia.
+        /// Depois das devidas validações, ele busca o elemento no banco e atualiza os valores baseados nos valores recebidos e retorna o objeto atualizado
+        /// </summary>
+        public async Task<Result<TransactionResponse>> UpdateTransaction(Guid id, TransactionRequest transactionRequest)
+        {
+            var category = await _context.categories.FindAsync(transactionRequest.CategoryId);
+            if (category == null) return Result<TransactionResponse>.Fail("Não existe uma categoria correspondente a esse identificador");
+
+            var person = await _context.people.FindAsync(transactionRequest.PersonId);
+            if (person == null) return Result<TransactionResponse>.Fail("Não existe uma pessoa correspondente a esse identificador");
+
+            var validateCategory = ValidateCategory(category.Purpose, transactionRequest.Type);
+            if (!validateCategory) return Result<TransactionResponse>.Fail("O tipo de transação escolhido não corresponde com a categoria informada");
+
+            if (person.Age < 18 && transactionRequest.Type == TransactionType.Income) return Result<TransactionResponse>.Fail("Usuário menores de idade apenas podem ter transação do tipo de despesa");
+
+            var transaction = await _context.transactions.FindAsync(id);
+
+            if (transaction == null) return Result<TransactionResponse>.Fail("Não existe uma transação com esse identificador");
+
+            transaction.Description = transactionRequest.Description;
+            transaction.Amount = transactionRequest.Amount;
+            transaction.Type = transactionRequest.Type;
+            transaction.Category = category;
+            transaction.Person = person;
+
+            await _context.SaveChangesAsync();
+
+            var response = _mapper.Map<TransactionResponse>(transaction);
+            return Result<TransactionResponse>.Ok(response);
+        }
+
 
         /// <summary>
         /// Esse método serve para validar se o tipo de transação corresponde a finalidade da categoria informada
@@ -98,6 +131,6 @@ namespace expense_control_api.Services
             return false;
         }
 
-
+      
   }
 }
