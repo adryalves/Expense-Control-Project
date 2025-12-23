@@ -371,7 +371,7 @@ export function PeoplePage() {
       if (editingPerson) {
         await apiSend<PersonResponse>({
           method: 'PUT',
-          path: `/api/v1.0/person?id=${encodeURIComponent(editingPerson.id)}`,
+          path: `/api/v1.0/person/${encodeURIComponent(editingPerson.id)}`,
           body: { name: name.trim(), age: ageNumber },
         })
       } else {
