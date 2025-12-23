@@ -41,16 +41,16 @@ namespace expense_control_api.Controllers
         }
 
         [HttpGet("All")]
-        public async Task<ActionResult<CategoryListResponse>> GetAllCategories()
+        public async Task<ActionResult<PaginatedResultDTO<CategoryResponse>>> GetAllCategories([FromQuery] PaginationParamsDTO paginationparams)
         {
             try
             {
-                var categories = await _categoryService.GetAllCategories();
+                var categories = await _categoryService.GetAllCategories(paginationparams.Page, paginationparams.PageSize);
 
                 if(!categories.Success)
                     return BadRequest(new { error = categories.Error });
 
-                return Ok(categories.Data.CategoryList);
+                return Ok(categories.Data);
             }
 
             catch (Exception ex)

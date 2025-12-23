@@ -6,7 +6,7 @@ namespace expense_control_api.Interfaces
     public interface ITransactionService
     {
         Task<Result<TransactionResponse>> GetTransactionById(Guid id);
-        Task<Result<TransactionListResponse>> GetAllTransaction();
+        Task<Result<PaginatedResultDTO<TransactionResponse>>> GetAllTransaction(int page = 1, int pageSize = 10);
         Task<Result<TransactionResponse>> CreateTransaction(TransactionRequest transactionRequest);
 
     }

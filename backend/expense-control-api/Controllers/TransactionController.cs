@@ -18,7 +18,7 @@ namespace expense_control_api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateTransaction([FromBody] TransactionRequest request)
+        public async Task<ActionResult<TransactionResponse>> CreateTransaction([FromBody] TransactionRequest request)
         {
             try
             {
@@ -40,16 +40,16 @@ namespace expense_control_api.Controllers
         }
 
         [HttpGet("All")]
-        public async Task<ActionResult> GetAllTransactions()
+        public async Task<ActionResult<PaginatedResultDTO<TransactionResponse>>> GetAllTransactions([FromQuery] PaginationParamsDTO paginationparams)
         {
             try
             {
-                var transactions = await _transactionService.GetAllTransaction();
+                var transactions = await _transactionService.GetAllTransaction(paginationparams.Page, paginationparams.PageSize);
 
                 if (!transactions.Success)
                     return BadRequest(new { error = transactions.Error });
 
-                return Ok(transactions.Data.TransactionList);
+                return Ok(transactions.Data);
 
             }
             catch (Exception ex)
@@ -59,7 +59,7 @@ namespace expense_control_api.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult> GetTransactionById(Guid id)
+        public async Task<ActionResult<TransactionResponse>> GetTransactionById(Guid id)
         {
             try
             {

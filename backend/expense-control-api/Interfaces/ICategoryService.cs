@@ -7,7 +7,7 @@ namespace expense_control_api.Interfaces
     public interface ICategoryService
     {
         Task<Result<CategoryResponse>> CreateCategory(CategoryRequest categoryRequest);
-        Task<Result<CategoryListResponse>> GetAllCategories();
+        Task<Result<PaginatedResultDTO<CategoryResponse>>> GetAllCategories(int page = 1, int pageSize = 10);
         Task<Result<CategoryResponse>> GetCategoryById(Guid id);
         Task<Result<CategoryResponse>> UpdateCategory(Guid id, CategoryRequest categoryRequest);
         Task<Result<CategoriesSummaryResponse>> GetCategoriesSummary();

@@ -5,6 +5,7 @@ using expense_control_api.Enums;
 using expense_control_api.Interfaces;
 using expense_control_api.Models;
 using expense_control_api.Results;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace expense_control_api.Services
@@ -53,16 +54,22 @@ namespace expense_control_api.Services
         /// <summary>
         /// Busca e retorna todas as transações existentes no sistema mapeadas para o DTO de resposta
         /// </summary>
-        public async Task<Result<TransactionListResponse>> GetAllTransaction()
+        public async Task<Result<PaginatedResultDTO<TransactionResponse>>> GetAllTransaction(int page = 1, int pageSize = 10)
         {
-            var transactions = await _context.transactions.ToListAsync();
+            var transactions = _context.transactions.AsNoTracking().OrderBy(t => t.Description);
+            var transactionsCount = await transactions.CountAsync();
+            var paginatedTransaction = await transactions.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            var transactionList = _mapper.Map<List<TransactionResponse>>(paginatedTransaction);
 
-            var response = new TransactionListResponse
+            var response = new PaginatedResultDTO<TransactionResponse>
             {
-                TransactionList = _mapper.Map<List<TransactionResponse>>(transactions)
+                Data = transactionList,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalRecords = transactionList.Count
             };
 
-            return Result<TransactionListResponse>.Ok(response);
+            return Result<PaginatedResultDTO<TransactionResponse>>.Ok(response);
         }
 
         /// <summary>

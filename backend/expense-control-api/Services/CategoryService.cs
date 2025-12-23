@@ -7,6 +7,8 @@ using expense_control_api.Models;
 using expense_control_api.Results;
 using Microsoft.EntityFrameworkCore;
 using System;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+
 
 namespace expense_control_api.Services
 {
@@ -38,15 +40,23 @@ namespace expense_control_api.Services
         /// <summary>
         /// Busca e retorna todas as categorias existentes no sistema
         /// </summary>
-        public async Task<Result<CategoryListResponse>> GetAllCategories()
+        public async Task<Result<PaginatedResultDTO<CategoryResponse>>> GetAllCategories(int page = 1, int pageSize = 10)
         {
+            var categories = _context.categories.AsNoTracking().OrderBy(c => c.Description);
+            var categoriesTotalCount = await categories.CountAsync();
+            var paginatedCategories = await categories.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            var categoryList = _mapper.Map<List<CategoryResponse>>(paginatedCategories);
 
-            var categories = await _context.categories.ToListAsync();
-            var response = new CategoryListResponse
+
+            var response = new PaginatedResultDTO<CategoryResponse>
             {
-                CategoryList = _mapper.Map<List<CategoryResponse>>(categories)
+                Data = categoryList,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalRecords = categoriesTotalCount
             };
-            return Result<CategoryListResponse>.Ok(response);
+
+            return Result<PaginatedResultDTO<CategoryResponse>>.Ok(response);
         }
 
         /// <summary>

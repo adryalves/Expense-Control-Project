@@ -5,6 +5,7 @@ using expense_control_api.Enums;
 using expense_control_api.Interfaces;
 using expense_control_api.Models;
 using expense_control_api.Results;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace expense_control_api.Services
@@ -42,16 +43,22 @@ namespace expense_control_api.Services
         /// <summary>
         /// Busca por todas as pessoas no sistema e retorna essa lista mapeada para o DTO de resposta
         /// </summary>
-        public async Task<Result<PersonListResponse>> GetAllPeople()
+        public async Task<Result<PaginatedResultDTO<PersonResponse>>> GetAllPeople(int page = 1, int pageSize = 10)
         {
-            var people = await _context.people.ToListAsync();
+            var people =  _context.people.AsNoTracking().OrderBy(p => p.Name);
+            var peopleTotalCount = await people.CountAsync();
+            var paginatedPeople = await people.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            var peopleList = _mapper.Map<List<PersonResponse>>(paginatedPeople);
 
-            var response = new PersonListResponse
+            var response = new PaginatedResultDTO<PersonResponse>
             {
-                PersonList = _mapper.Map<List<PersonResponse>>(people)
+                Data = peopleList,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalRecords = peopleTotalCount
             };
 
-            return Result<PersonListResponse>.Ok(response);
+            return Result<PaginatedResultDTO<PersonResponse>>.Ok(response);
         }
 
         /// <summary>

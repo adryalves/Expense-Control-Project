@@ -39,16 +39,16 @@ namespace expense_control_api.Controllers
         }
 
         [HttpGet("All")]
-        public async Task<ActionResult<PersonListResponse>> GetAllPeople()
+        public async Task<ActionResult<PaginatedResultDTO<PersonResponse>>> GetAllPeople([FromQuery] PaginationParamsDTO paginationparams)
         {
             try
             {
-                var people = await _personService.GetAllPeople();
+                var people = await _personService.GetAllPeople(paginationparams.Page, paginationparams.PageSize);
 
                 if (!people.Success)
                     return BadRequest(new { error = people.Error });
 
-                return Ok(people.Data.PersonList);
+                return Ok(people.Data);
                
             }
 
@@ -57,7 +57,8 @@ namespace expense_control_api.Controllers
                 return BadRequest(ex.Message);
             }
 
-        }
+       }
+
 
         [HttpGet("{id}")]
         public async Task<ActionResult<PersonResponse>> GetPersonById(Guid id)
