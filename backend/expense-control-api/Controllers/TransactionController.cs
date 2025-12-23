@@ -86,12 +86,16 @@ namespace expense_control_api.Controllers
             {
                 if (!ModelState.IsValid) return BadRequest(ModelState);
 
-                var transaction = await _transactionService.UpdateTransaction(id, request);
+               var transaction = await _transactionService.GetTransactionById(id);
 
-                if (!transaction.Success)
-                    return BadRequest(new { error = transaction.Error });
+                if (transaction.Data == null) return NotFound("Não foi encontrada uma transação com esse identificador");
+   
+                var transactionUpdated = await _transactionService.UpdateTransaction(id, request);
 
-                return Ok(transaction.Data);
+                if (!transactionUpdated.Success)
+                    return BadRequest(new { error = transactionUpdated.Error });
+
+                return Ok(transactionUpdated.Data);
 
             }
             catch (Exception ex)

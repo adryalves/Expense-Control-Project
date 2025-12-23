@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using expense_control_api.Data;
 using expense_control_api.DTOs;
 using expense_control_api.Enums;
@@ -66,7 +66,7 @@ namespace expense_control_api.Services
                 Data = transactionList,
                 CurrentPage = page,
                 PageSize = pageSize,
-                TotalRecords = transactionList.Count
+                TotalRecords = transactionsCount
             };
 
             return Result<PaginatedResultDTO<TransactionResponse>>.Ok(response);
