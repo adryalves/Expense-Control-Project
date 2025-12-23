@@ -129,8 +129,6 @@ namespace expense_control_api.Services
             if (categoryPurpose == CategoryPurpose.Income && transactionType == TransactionType.Income) return true;
 
             return false;
-        }
-
-      
+        }      
   }
 }

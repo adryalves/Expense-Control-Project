@@ -23,20 +23,17 @@ namespace expense_control_api.Controllers
             try
             {
                 if (!ModelState.IsValid) return BadRequest(ModelState);
-                
-                    var category = await _categoryService.CreateCategory(request);
+                             
+                var category = await _categoryService.CreateCategory(request);
 
-                if(!category.Success)
-                    return BadRequest(new { error = category.Error });
+                if(!category.Success) return BadRequest(new { error = category.Error });
 
                 return Ok(category.Data);
-             
-
             }
 
-            catch (Exception ex)
+            catch (Exception)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro interno ao processar sua solicitação.");
             }
         }
 
@@ -47,15 +44,14 @@ namespace expense_control_api.Controllers
             {
                 var categories = await _categoryService.GetAllCategories(paginationparams.Page, paginationparams.PageSize);
 
-                if(!categories.Success)
-                    return BadRequest(new { error = categories.Error });
+                if(!categories.Success) return BadRequest(new { error = categories.Error });
 
                 return Ok(categories.Data);
             }
 
-            catch (Exception ex)
+            catch (Exception)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro interno ao processar sua solicitação.");
             }
         }
 
@@ -67,14 +63,13 @@ namespace expense_control_api.Controllers
                 var category = await _categoryService.GetCategoryById(id);
                 if (category == null) return NotFound("Não foi encontrada uma categoria com esse id");
 
-                if(!category.Success)
-                    return BadRequest(new { error = category.Error });
+                if(!category.Success) return BadRequest(new { error = category.Error });
 
                 return Ok(category.Data);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro interno ao processar sua solicitação.");
             }
         }
 
@@ -84,15 +79,14 @@ namespace expense_control_api.Controllers
             try
             {
                 var categoriesSumamry = await _categoryService.GetCategoriesSummary();
-                if (!categoriesSumamry.Success)
-                    return BadRequest(new { error = categoriesSumamry.Error });
+                if (!categoriesSumamry.Success) return BadRequest(new { error = categoriesSumamry.Error });
 
                 return Ok(categoriesSumamry.Data);
             }
 
-            catch (Exception ex)
+            catch (Exception)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro interno ao processar sua solicitação.");
             }
         }
 
@@ -108,15 +102,14 @@ namespace expense_control_api.Controllers
 
                 var updatedCategory = await _categoryService.UpdateCategory(id, request);
 
-                if(!updatedCategory.Success)
-                    return BadRequest(new { error = updatedCategory.Error });
+                if(!updatedCategory.Success) return BadRequest(new { error = updatedCategory.Error });
 
                 return Ok(updatedCategory);
             }
 
-            catch (Exception ex)
+            catch (Exception)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro interno ao processar sua solicitação.");
             }
         }
 

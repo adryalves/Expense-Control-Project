@@ -26,15 +26,14 @@ namespace expense_control_api.Controllers
 
                 var transaction = await _transactionService.CreateTransaction(request);
 
-                if (!transaction.Success)
-                    return BadRequest(new { error = transaction.Error });
+                if (!transaction.Success) return BadRequest(new { error = transaction.Error });
 
                 return Ok(transaction.Data);
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro interno ao processar sua solicitação.");
             }
 
         }
@@ -46,15 +45,14 @@ namespace expense_control_api.Controllers
             {
                 var transactions = await _transactionService.GetAllTransaction(paginationparams.Page, paginationparams.PageSize);
 
-                if (!transactions.Success)
-                    return BadRequest(new { error = transactions.Error });
+                if (!transactions.Success) return BadRequest(new { error = transactions.Error });
 
                 return Ok(transactions.Data);
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro interno ao processar sua solicitação.");
             }
         }
 
@@ -64,18 +62,16 @@ namespace expense_control_api.Controllers
             try
             {
                 var transaction = await _transactionService.GetTransactionById(id);
+                if(transaction.Data == null) return NotFound("Não foi encontrada uma transação com esse identificador");
 
-                if (transaction.Data == null) return NotFound("Não foi encontrada uma transação com esse identificador");
-
-                if(!transaction.Success)
-                    return BadRequest(new { error = transaction.Error });
+                if(!transaction.Success) return BadRequest(new { error = transaction.Error });
 
                 return Ok(transaction.Data);
             }
 
-            catch (Exception ex)
+            catch (Exception)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro interno ao processar sua solicitação.");
             }
         }
 
@@ -86,21 +82,19 @@ namespace expense_control_api.Controllers
             {
                 if (!ModelState.IsValid) return BadRequest(ModelState);
 
-               var transaction = await _transactionService.GetTransactionById(id);
-
+                var transaction = await _transactionService.GetTransactionById(id);
                 if (transaction.Data == null) return NotFound("Não foi encontrada uma transação com esse identificador");
    
                 var transactionUpdated = await _transactionService.UpdateTransaction(id, request);
 
-                if (!transactionUpdated.Success)
-                    return BadRequest(new { error = transactionUpdated.Error });
+                if (!transactionUpdated.Success) return BadRequest(new { error = transactionUpdated.Error });
 
                 return Ok(transactionUpdated.Data);
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro interno ao processar sua solicitação.");
             }
         }
 

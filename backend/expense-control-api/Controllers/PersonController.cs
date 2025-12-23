@@ -28,18 +28,16 @@ namespace expense_control_api.Controllers
                 if(nameAlreadyExists.Data != null)
                     return BadRequest(new { error = "Já existe uma pessoa com esse nome" });
 
-
                 var person = await _personService.CreatePerson(request);
 
-                if (!person.Success)
-                    return BadRequest(new { error = person.Error });
+                if (!person.Success) return BadRequest(new { error = person.Error });
 
                 return Ok(person.Data);
             }
 
-            catch (Exception ex)
+            catch (Exception)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro interno ao processar sua solicitação.");
             }
         }
 
@@ -50,20 +48,16 @@ namespace expense_control_api.Controllers
             {
                 var people = await _personService.GetAllPeople(paginationparams.Page, paginationparams.PageSize);
 
-                if (!people.Success)
-                    return BadRequest(new { error = people.Error });
+                if (!people.Success) return BadRequest(new { error = people.Error });
 
-                return Ok(people.Data);
-               
+                return Ok(people.Data);               
             }
 
-            catch (Exception ex)
+            catch (Exception)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro interno ao processar sua solicitação.");
             }
-
        }
-
 
         [HttpGet("{id}")]
         public async Task<ActionResult<PersonResponse>> GetPersonById(Guid id)
@@ -73,15 +67,14 @@ namespace expense_control_api.Controllers
                 var person = await _personService.GetPersonById(id);
                 if (person.Data == null) return NotFound("Não foi encontrada uma pessoa com esse Id");
 
-                if (!person.Success)
-                    return BadRequest(new { error = person.Error });
+                if (!person.Success) return BadRequest(new { error = person.Error });
 
                 return Ok(person.Data);
             }
 
-            catch (Exception ex)
+            catch (Exception)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro interno ao processar sua solicitação.");
             }
 
         }
@@ -93,15 +86,14 @@ namespace expense_control_api.Controllers
             {
                 var peopleSummary = await _personService.GetPeopleSummary();
 
-                if(!peopleSummary.Success)
-                    return BadRequest(new { error = peopleSummary.Error });
+                if(!peopleSummary.Success) return BadRequest(new { error = peopleSummary.Error });
 
                 return Ok(peopleSummary.Data);
             }
 
-            catch (Exception ex)
+            catch (Exception)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro interno ao processar sua solicitação.");
             }
         }
 
@@ -112,16 +104,14 @@ namespace expense_control_api.Controllers
             {              
                 var delete =  await _personService.DeletePerson(id);
 
-                if (!delete.Success)
-                    return BadRequest(new { error = delete.Error });
+                if (!delete.Success) return BadRequest(new { error = delete.Error });
 
                 return Ok(delete.Data);
-
             }
 
-            catch (Exception ex)
+            catch (Exception)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro interno ao processar sua solicitação.");
             }
         }
 
@@ -138,20 +128,18 @@ namespace expense_control_api.Controllers
 
 
                 var person = await _personService.GetPersonById(id);
-
                 if(person.Data == null) return NotFound("Não foi encontrada uma pessoa com esse id");
 
                 var personUpdated = await _personService.UpdatePerson(id, request);
 
-                if(!personUpdated.Success)
-                    return BadRequest(new { error = personUpdated.Error });
+                if(!personUpdated.Success) return BadRequest(new { error = personUpdated.Error });
 
                 return Ok(personUpdated.Data);
             }
 
-            catch (Exception ex)
+            catch (Exception)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro interno ao processar sua solicitação.");
             }
         }
     }

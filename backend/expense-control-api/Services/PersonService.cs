@@ -94,6 +94,7 @@ namespace expense_control_api.Services
                 
             _context.people.Remove(person);
             await _context.SaveChangesAsync();
+
            return Result<bool>.Ok(true);
         }
 

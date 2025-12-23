@@ -120,9 +120,6 @@ namespace expense_control_api.Services
 
             return Result<CategoriesSummaryResponse>.Ok(response);
         }
-       
-
-
     }
 }
 
