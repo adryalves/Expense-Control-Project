@@ -17,8 +17,8 @@ export function Sidebar({ activeRoute }: { activeRoute: RouteKey }) {
   return (
     <aside className="sidebar">
       <div className="sidebar__brand">
-        <div className="sidebar__brandTitle">Sistema Financeiro</div>
-        <div className="sidebar__brandSubtitle">Gestão Completa</div>
+        <div className="sidebar__brandTitle">Gastos residenciais</div>
+        <div className="sidebar__brandSubtitle">Gestão de Controle</div>
       </div>
 
       <nav className="sidebar__nav" aria-label="Menu principal">
