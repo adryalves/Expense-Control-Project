@@ -73,6 +73,18 @@ namespace expense_control_api.Services
         }
 
         /// <summary>
+        /// Recebe um nome, busca no sistema um item na tabela pessoas com esse nome e retorna ele mapeado para o DTO de resposta
+        /// </summary>
+        public async Task<Result<PersonResponse>> GetPersonByName(string name)
+        {
+            var person = await _context.people.FirstOrDefaultAsync(p => p.Name == name);
+            var response = _mapper.Map<PersonResponse>(person);
+
+            return Result<PersonResponse>.Ok(response);
+        }
+
+
+        /// <summary>
         /// Recebe um id, busca no sistema um item na tabela pessoas com esse identificador e caso exista, apaga esse elemento da tabela
         /// </summary>
         public async Task<Result<bool>> DeletePerson(Guid id)

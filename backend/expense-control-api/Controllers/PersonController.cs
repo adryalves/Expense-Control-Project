@@ -1,4 +1,4 @@
-﻿﻿using expense_control_api.DTOs;
+﻿﻿﻿using expense_control_api.DTOs;
 using expense_control_api.Interfaces;
 using expense_control_api.Models;
 using expense_control_api.Results;
@@ -24,7 +24,12 @@ namespace expense_control_api.Controllers
             {
                 if (!ModelState.IsValid) return BadRequest(ModelState);
                 
-                    var person = await _personService.CreatePerson(request);
+                var nameAlreadyExists = await _personService.GetPersonByName(request.Name);
+                if(nameAlreadyExists.Data != null)
+                    return BadRequest(new { error = "Já existe uma pessoa com esse nome" });
+
+
+                var person = await _personService.CreatePerson(request);
 
                 if (!person.Success)
                     return BadRequest(new { error = person.Error });
@@ -126,6 +131,11 @@ namespace expense_control_api.Controllers
             try
             {
                 if (!ModelState.IsValid) return BadRequest(ModelState);
+                
+                var nameAlreadyExists = await _personService.GetPersonByName(request.Name);
+                if(nameAlreadyExists.Data != null && nameAlreadyExists.Data.Id != id) 
+                        return BadRequest(new { error = "Já existe uma pessoa com esse nome" });
+
 
                 var person = await _personService.GetPersonById(id);
 
