@@ -59,8 +59,7 @@ Assim, já é possível acessar a aplicação completa e testar as funcionalidad
    - Usuário: `app`
    - Senha: `app123`
 2. Rode o Script do banco <br>
-   Vou deixar o script do banco, de forma que é necessário rodar esse script dentro desse
-   banco de dados.
+   Vou deixar o script do banco na raiz desse programa, de forma que é necessário abrir esse script e rodar ele dentro do MySQL para criar o banco e as tabelas.
 
 ### 2) Rodar o backend (API)
 
