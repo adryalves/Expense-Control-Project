@@ -159,7 +159,7 @@ export function DashboardPage() {
       </div>
 
       <Panel
-        title="Transações Recentes"
+        title="Transações"
         right={
           <button type="button" className="linkButton" onClick={() => navigate('transactions')}>
             Ver todas

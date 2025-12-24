@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: expense_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: expense_control
+      MYSQL_USER: app
+      MYSQL_PASSWORD: app123
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -proot --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build:
+      context: ./backend/expense-control-api
+      dockerfile: Dockerfile
+    container_name: expense_api
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=mysql;Port=3306;Database=expense_control;User=app;Password=app123;
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend/expense-control-front
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:8080
+    container_name: expense_front
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+
+volumes:
+  mysql_data:

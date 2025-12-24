@@ -4,6 +4,7 @@ using expense_control_api.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,8 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new() { Title = "ExpenseControlAPI", Version = "v1" });
 });
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
@@ -26,7 +29,9 @@ builder.Services.AddCors(options =>
                     "http://localhost:5173",
                     "http://127.0.0.1:5173",
                     "http://localhost:4173",
-                    "http://127.0.0.1:4173"
+                    "http://127.0.0.1:4173",
+                    "http://localhost:3000",
+                    "http://127.0.0.1:3000"
                 )
                 .AllowAnyHeader()
                 .AllowAnyMethod()
@@ -61,6 +66,29 @@ builder.Services.AddControllers()
 
 
 var app = builder.Build();
+
+
+using (var scope = app.Services.CreateScope())
+{
+    var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
+    var db = scope.ServiceProvider.GetRequiredService<ExpenseControlDbContext>();
+    var maxAttempts = 20;
+    for (var attempt = 1; attempt <= maxAttempts; attempt++)
+    {
+        try
+        {
+            db.Database.EnsureCreated();
+            break;
+        }
+        catch (Exception ex) when (attempt < maxAttempts)
+        {
+            var delay = TimeSpan.FromSeconds(Math.Min(10, attempt));
+            logger.LogWarning(ex, "Database not ready (attempt {Attempt}/{MaxAttempts}). Retrying in {DelaySeconds}s.", attempt, maxAttempts, delay.TotalSeconds);
+            Thread.Sleep(delay);
+        }
+    }
+}
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
